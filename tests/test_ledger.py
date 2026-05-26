@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 from citelock import JsonlLedger, gate
 
 
@@ -51,3 +53,47 @@ def test_tamper_detected(tmp_path, entail_backend):
 def test_empty_ledger_verifies(tmp_path):
     ok, reason = JsonlLedger(tmp_path / "absent.jsonl").verify()
     assert ok and reason is None
+
+
+def _make_ledger(tmp_path, entail_backend):
+    path = tmp_path / "run.jsonl"
+    ledger = JsonlLedger(path)
+    gate(
+        "The sky is blue. Grass is green.",
+        ["The sky is blue.", "Grass is green."],
+        backend=entail_backend,
+        ledger=ledger,
+    )
+    return path, ledger
+
+
+def test_invalid_json_line_detected(tmp_path, entail_backend):
+    path, ledger = _make_ledger(tmp_path, entail_backend)
+    with path.open("a", encoding="utf-8") as f:
+        f.write("this is not json\n")
+    ok, reason = ledger.verify()
+    assert not ok
+    assert reason is not None and "invalid JSON" in reason
+
+
+def test_hash_algo_mismatch_detected(tmp_path, entail_backend):
+    path, ledger = _make_ledger(tmp_path, entail_backend)
+    lines = path.read_text().splitlines()
+    first = json.loads(lines[0])
+    first["hash_algo"] = "fake-algo-1"
+    path.write_text("\n".join([json.dumps(first), *lines[1:]]) + "\n")
+    ok, reason = ledger.verify()
+    assert not ok
+    assert reason is not None and "hash algo mismatch" in reason
+
+
+def test_broken_chain_link_detected(tmp_path, entail_backend):
+    path, ledger = _make_ledger(tmp_path, entail_backend)
+    lines = path.read_text().splitlines()
+    assert len(lines) >= 2  # 2 claims + 1 gate summary
+    second = json.loads(lines[1])
+    second["prev_hash"] = "f" * 64  # break the link to the previous entry
+    path.write_text("\n".join([lines[0], json.dumps(second), *lines[2:]]) + "\n")
+    ok, reason = ledger.verify()
+    assert not ok
+    assert reason is not None and "broken chain link" in reason

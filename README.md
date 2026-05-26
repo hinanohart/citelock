@@ -149,14 +149,15 @@ reproducibility it cannot keep.
 ## Evaluation
 
 `eval/run_eval.py` gates a labeled set and reports deny precision/recall/F1,
-accuracy, and **false-deny rate**, each with a bootstrap 95% CI and an
-environment stamp. Numbers below are **real, reproducible runs** — no
+accuracy, **false-deny rate** (gold-allow blocked — usability cost) and
+**false-allow rate** (gold-deny passed — safety cost), each with a bootstrap 95%
+CI and an environment stamp. Numbers below are **real, reproducible runs** — no
 placeholders.
 
-Measured runs, seed 0, Python 3.12.3, Linux x86_64 (`0.1.0a1`), default
+Measured runs, seed 0, Python 3.12.3, Linux x86_64 (`0.1.0a2`), default
 `min_relevance=0.2`.
 
-**Clear-cut set** (`eval/labeled_cases.json`, 30 cases, one relevant citation each):
+**Clear-cut set** (`eval/labeled_cases.json`, 30 cases, 1–2 citations each):
 
 | backend | model | accuracy | deny P / R / F1 | false-deny rate |
 |---|---|---|---|---|
@@ -182,12 +183,31 @@ reduction, but **not zero.** A residual false-deny rate remains and will be
 higher on harder data; measure it on yours before trusting the gate in
 production.
 
+**The other side of the filter** (`eval/contradiction_recall_cases.json`, 12
+wrong answers whose retrieved passages contradict them, `gold=deny`):
+
+| min_relevance | false-allow rate (local) |
+|---|---|
+| 0.2 (default) | **0.17** `[0.00, 0.42]` (2/12) |
+| 0.0 (filter off) | **0.00** (0/12) |
+
+This is the **cost** of the filter, measured. By dropping off-topic passages it
+also drops a genuine contradiction that happens to be phrased without the
+claim's words, so 2 of these 12 wrong answers are allowed through at the default
+setting; with the filter off, all 12 are correctly denied. The relevance filter
+is therefore a **policy-controlled trade-off** — distractor robustness (low
+false-deny) vs contradiction recall (low false-allow) — not a free win. Raise
+`min_relevance` for the former, lower it for the latter, and measure both on
+your data. (A dropped contradiction still appears in the claim's `evidence` with
+`relevant=False`, so it is visible to an auditor even when it did not vote.)
+
 Reproduce:
 
 ```bash
 python eval/run_eval.py --backend local                                  # clear-cut set
 python eval/run_eval.py --backend local --cases eval/distractor_cases.json
 python eval/run_eval.py --backend local --cases eval/distractor_cases.json --min-relevance 0
+python eval/run_eval.py --backend local --cases eval/contradiction_recall_cases.json
 ```
 
 **On public datasets:** RAGTruth (MIT) and ExpertQA (MIT) are appropriate
@@ -208,9 +228,17 @@ misleading ones.
   on the noisy-retrieval set above) is the gate's main usability cost. A
   relevance-scoped contradiction model is planned. Measure your own false-deny
   rate.
-- The relevance filter is lexical content-word overlap; a genuine contradiction
-  phrased with no shared vocabulary can be missed. It trades a little of that
-  recall for a large drop in distractor-driven false-denies.
+- **The relevance filter cuts both ways.** It is lexical content-word overlap,
+  so a genuine contradiction phrased with no shared vocabulary is filtered out
+  too. Measured cost: on the contradiction-recall set above it lets **2 of 12**
+  wrong answers through (false-allow 0.17) at the default `min_relevance=0.2`,
+  versus **0 of 12** with the filter off. This is a real safety/usability
+  trade-off you tune with `min_relevance`, not a free win.
+- **Tokenization is whitespace + Unicode word characters.** It works for
+  space-delimited scripts (Latin incl. accents, Cyrillic, Greek, …). Scripts
+  written without spaces between words (CJK, Thai, …) are not segmented, so the
+  relevance filter cannot judge overlap there — use `min_relevance=0` with a
+  backend you trust, or supply your own tokenizer. Stopwords are English-only.
 - Sentence-level decomposition: a sentence with two facts is one claim in the
   alpha. Finer decomposition is opt-in (LLM, non-deterministic).
 - NLI is applied per passage; multi-hop claims spanning several passages are not

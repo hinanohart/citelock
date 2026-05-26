@@ -9,7 +9,7 @@ that raised. There is no code path that turns an error into an allow.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Sequence
-from typing import Any
+from typing import Any, Literal
 
 from .backends.base import NLIBackend
 from .decompose import decompose_claims
@@ -17,6 +17,8 @@ from .hashing import hash_obj
 from .policy import DEFAULT_POLICY, GatePolicy
 from .textutil import relevance
 from .types import Citation, Claim, ClaimVerdict, Decision, GateResult, PairEvidence, Verdict
+
+DecomposeMethod = Literal["deterministic", "llm"]
 
 
 def _citelock_version() -> str:
@@ -166,7 +168,7 @@ def gate(
     *,
     backend: NLIBackend,
     policy: GatePolicy = DEFAULT_POLICY,
-    decompose: str = "deterministic",
+    decompose: DecomposeMethod = "deterministic",
     llm_fn: Callable[[str], list[str]] | None = None,
     ledger: Any | None = None,
 ) -> GateResult:
@@ -276,7 +278,7 @@ class Citelock:
         *,
         backend: NLIBackend,
         policy: GatePolicy = DEFAULT_POLICY,
-        decompose: str = "deterministic",
+        decompose: DecomposeMethod = "deterministic",
         llm_fn: Callable[[str], list[str]] | None = None,
     ) -> None:
         self.backend = backend

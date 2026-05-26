@@ -46,7 +46,7 @@ jobs:
         run: grep -q "not a fact-checker" README.md
       - name: Banned marketing phrases are absent
         run: |
-          if grep -rniE 'fully automatic|never fails|100% accurate|permanent solution|completely automatic' README.md; then
+          if grep -rniE 'fully automatic|fully autonomous|never fails|100% accurate|100% reliable|permanent solution|completely automatic|forever' README.md; then
             echo "::error::banned marketing phrase found in README"; exit 1
           fi
       - name: No placeholder metric tokens

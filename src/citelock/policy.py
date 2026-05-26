@@ -35,6 +35,12 @@ class GatePolicy(BaseModel):
     # the original "any citation may vote" behavior. Default 0.2 was chosen
     # empirically: it left a curated set's accuracy unchanged while cutting the
     # false-deny rate on noisy-retrieval cases roughly 9x. See README.
+    #
+    # IMPORTANT (the trade-off): this gate suppresses a citation's *contradiction*
+    # vote as well as its entailment vote. A real contradiction phrased with
+    # little shared vocabulary is filtered out too, which can let a wrong answer
+    # through. The contradiction-recall eval measures this; raise min_relevance
+    # for more distractor protection, lower it for more contradiction recall.
     min_relevance: float = Field(default=0.2, ge=0.0, le=1.0)
 
     def policy_id(self) -> str:

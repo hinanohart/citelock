@@ -62,6 +62,7 @@ def evaluate(cases: list[dict], backend: NLIBackend, seed: int, min_relevance: f
     tp = fp = tn = fn = 0
     correct: list[int] = []
     false_deny: list[int] = []  # gold allow but predicted deny
+    false_allow: list[int] = []  # gold deny but predicted allow (missed contradiction)
     for c in cases:
         result = gate(c["answer"], c["citations"], backend=backend, policy=policy)
         pred = result.decision
@@ -69,6 +70,8 @@ def evaluate(cases: list[dict], backend: NLIBackend, seed: int, min_relevance: f
         correct.append(1 if pred == gold else 0)
         if gold == "allow":
             false_deny.append(1 if pred == "deny" else 0)
+        if gold == "deny":
+            false_allow.append(1 if pred == "allow" else 0)
         if pred == "deny" and gold == "deny":
             tp += 1
         elif pred == "deny" and gold == "allow":
@@ -83,16 +86,24 @@ def evaluate(cases: list[dict], backend: NLIBackend, seed: int, min_relevance: f
     f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
     accuracy = sum(correct) / len(correct) if correct else 0.0
     fd_rate = sum(false_deny) / len(false_deny) if false_deny else 0.0
+    fa_rate = sum(false_allow) / len(false_allow) if false_allow else 0.0
 
     return {
         "n_cases": len(cases),
+        "n_gold_allow": len(false_deny),
+        "n_gold_deny": len(false_allow),
         "deny_precision": round(precision, 4),
         "deny_recall": round(recall, 4),
         "deny_f1": round(f1, 4),
         "accuracy": round(accuracy, 4),
         "accuracy_ci95": _bootstrap_ci(correct, rng),
+        # gold=allow predicted deny: usability cost (over-blocking correct answers).
         "false_deny_rate": round(fd_rate, 4),
         "false_deny_rate_ci95": _bootstrap_ci(false_deny, rng),
+        # gold=deny predicted allow: safety cost (a wrong answer slips the gate,
+        # e.g. a contradiction the relevance filter dropped).
+        "false_allow_rate": round(fa_rate, 4),
+        "false_allow_rate_ci95": _bootstrap_ci(false_allow, rng),
         "confusion": {"tp": tp, "fp": fp, "tn": tn, "fn": fn},
     }
 

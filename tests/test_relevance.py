@@ -69,6 +69,51 @@ def test_no_relevant_citation_denies(entail_backend):
     assert r.claim_verdicts[0].rule_applied == "R-C:no-relevant-citation"
 
 
+class SupportPlanetContradictReclassified(NLIBackend):
+    """Entails passages with 'planet'; contradicts passages with 'reclassified'."""
+
+    @property
+    def backend_id(self) -> str:
+        return "test-planet"
+
+    @property
+    def is_deterministic(self) -> bool:
+        return True
+
+    def classify(self, premise: str, hypothesis: str) -> NLIResult:
+        if "reclassified" in premise.lower():
+            return NLIResult(entailment=0.02, contradiction=0.95, neutral=0.03)
+        if "planet" in premise.lower():
+            return NLIResult(entailment=0.95, contradiction=0.02, neutral=0.03)
+        return NLIResult(entailment=0.05, contradiction=0.05, neutral=0.90)
+
+
+def test_low_overlap_contradiction_is_filtered_documents_tradeoff():
+    # THE TRADE-OFF, made explicit and regression-locked: a genuine contradiction
+    # phrased without the claim's vocabulary is filtered out, so a shallow on-topic
+    # supporter alone can make a wrong answer ALLOW. This is the cost of the filter
+    # (see README "Limitations" + the contradiction-recall eval), and it is
+    # policy-controlled: min_relevance=0 catches the contradiction.
+    answer = "Pluto is a planet."
+    cits = [
+        "Pluto is classified as a planet here.",  # high overlap, entails -> votes
+        "Astronomers reclassified the ninth body as a dwarf world.",  # low overlap, filtered
+    ]
+    backend = SupportPlanetContradictReclassified()
+
+    # Default filter: the contradiction is dropped -> wrong allow (documented cost).
+    r_default = gate(answer, cits, backend=backend)
+    assert r_default.decision == "allow"
+    # The dropped contradiction is still visible in the audit trail (relevant=False).
+    contra_ev = [e for e in r_default.claim_verdicts[0].evidence if e.contradiction >= 0.5]
+    assert contra_ev and all(e.relevant is False for e in contra_ev)
+
+    # Filter off: the contradiction votes and R-A denies.
+    r_off = gate(answer, cits, backend=backend, policy=GatePolicy(min_relevance=0.0))
+    assert r_off.decision == "deny"
+    assert r_off.claim_verdicts[0].verdict == "contradicted"
+
+
 def test_relevance_scores():
     assert (
         relevance("Paris is the capital of France.", "Paris is the capital city of France.") == 1.0
