@@ -36,7 +36,8 @@ def test_chain_links_across_calls(tmp_path, entail_backend):
 def test_tamper_detected(tmp_path, entail_backend):
     path = tmp_path / "run.jsonl"
     ledger = JsonlLedger(path)
-    gate("The sky is blue.", ["a"], backend=entail_backend, ledger=ledger)
+    # Citation is relevant to the claim so the verdict is "entailed".
+    gate("The sky is blue.", ["The sky is blue."], backend=entail_backend, ledger=ledger)
     lines = path.read_text().splitlines()
     # Flip the decision inside a recorded entry without fixing the hash.
     tampered = lines[0].replace('"entailed"', '"contradicted"')

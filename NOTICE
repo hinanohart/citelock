@@ -22,7 +22,7 @@ Optional extras (installed only when requested, NOT part of the core install):
   [nli]
   - torch               BSD-3-Clause
   - transformers        Apache-2.0
-  - sentence-transformers  Apache-2.0
+  - sentencepiece       Apache-2.0
 
 Default NLI model (downloaded at runtime from the Hugging Face Hub, NOT
 redistributed here):

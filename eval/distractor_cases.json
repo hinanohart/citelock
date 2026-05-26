@@ -1,0 +1,12 @@
+[
+  {"answer": "Paris is the capital of France.", "citations": ["Paris is the capital city of France.", "Mount Kilimanjaro is the highest peak in Africa.", "Saturn has a prominent ring system."], "gold": "allow"},
+  {"answer": "Water boils at 100 degrees Celsius at sea level.", "citations": ["At sea level, water boils at 100 degrees Celsius.", "The novel was adapted into a film in 2010.", "Octopuses have three hearts."], "gold": "allow"},
+  {"answer": "The human heart has four chambers.", "citations": ["The heart is composed of four chambers.", "Brazil is the largest country in South America.", "The conference was rescheduled to March."], "gold": "allow"},
+  {"answer": "Shakespeare wrote Hamlet.", "citations": ["Hamlet is a tragedy written by William Shakespeare.", "Aluminium is a lightweight metal.", "The bridge spans nearly two kilometres."], "gold": "allow"},
+  {"answer": "Photosynthesis produces oxygen.", "citations": ["During photosynthesis, plants release oxygen as a byproduct.", "Interest rates were left unchanged this quarter.", "The museum opens at nine in the morning."], "gold": "allow"},
+  {"answer": "Mount Everest is the tallest mountain on Earth.", "citations": ["Mount Everest is Earth's highest mountain above sea level.", "The orchestra performed three symphonies.", "Honey does not spoil if stored properly."], "gold": "allow"},
+  {"answer": "Insulin helps regulate blood sugar levels.", "citations": ["Insulin is a hormone that lowers blood glucose.", "The volcano last erupted in 1923.", "The team signed two new players."], "gold": "allow"},
+  {"answer": "Sound cannot travel through a vacuum.", "citations": ["Because it needs a medium, sound does not propagate through a vacuum.", "The painting sold for a record price.", "Cacti can survive long periods without water."], "gold": "allow"},
+  {"answer": "The Amazon River flows through Brazil.", "citations": ["The Amazon River flows through Brazil before reaching the Atlantic.", "Tungsten has a very high melting point.", "The library extended its weekend hours."], "gold": "allow"},
+  {"answer": "Helium is lighter than air.", "citations": ["Helium has a lower density than air, which is why helium balloons rise.", "The festival attracts visitors from abroad.", "Granite is an igneous rock."], "gold": "allow"}
+]

@@ -74,7 +74,13 @@ def test_contradiction_wins_over_entailment():
                 return NLIResult(entailment=0.95, contradiction=0.02, neutral=0.03)
             return NLIResult(entailment=0.02, contradiction=0.95, neutral=0.03)
 
-    r = gate("A claim.", ["entail passage", "contradict passage"], backend=Mixed())
+    # min_relevance=0: this test isolates aggregation, not the relevance filter.
+    r = gate(
+        "A claim.",
+        ["entail passage", "contradict passage"],
+        backend=Mixed(),
+        policy=GatePolicy(min_relevance=0.0),
+    )
     assert r.decision == "deny"
     assert r.claim_verdicts[0].verdict == "contradicted"
 
@@ -109,5 +115,7 @@ def test_threshold_boundary():
             return NLIResult(entailment=0.5, contradiction=0.0, neutral=0.5)
 
     # entailment exactly at tau_entail (0.5) -> entailed (>= is inclusive).
-    r = gate("A claim.", ["p"], backend=Exact())
+    # min_relevance=0: "p" shares no words with the claim; this test checks the
+    # threshold boundary, not relevance filtering.
+    r = gate("A claim.", ["p"], backend=Exact(), policy=GatePolicy(min_relevance=0.0))
     assert r.claim_verdicts[0].verdict == "entailed"

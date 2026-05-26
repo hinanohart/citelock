@@ -87,6 +87,7 @@ def _cmd_gate(args: argparse.Namespace) -> int:
         tau_entail=args.tau_entail,
         tau_contra=args.tau_contra,
         min_citations=args.min_citations,
+        min_relevance=args.min_relevance,
     )
     ledger = JsonlLedger(args.ledger) if args.ledger else None
     result = gate(
@@ -180,6 +181,12 @@ def _build_parser() -> argparse.ArgumentParser:
     g.add_argument("--tau-entail", type=float, default=0.5)
     g.add_argument("--tau-contra", type=float, default=0.5)
     g.add_argument("--min-citations", type=int, default=1)
+    g.add_argument(
+        "--min-relevance",
+        type=float,
+        default=0.2,
+        help="min content-word overlap for a citation to vote (0 disables filtering)",
+    )
     g.add_argument("--decompose", default="deterministic", choices=["deterministic"])
     g.add_argument("--ledger", default=None, help="append a per-claim ledger here")
     g.add_argument("--json", action="store_true", help="emit the full GateResult as JSON")

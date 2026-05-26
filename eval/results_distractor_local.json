@@ -11,24 +11,24 @@
     "min_relevance": 0.2
   },
   "metrics": {
-    "n_cases": 30,
-    "deny_precision": 1.0,
-    "deny_recall": 1.0,
-    "deny_f1": 1.0,
-    "accuracy": 1.0,
+    "n_cases": 10,
+    "deny_precision": 0.0,
+    "deny_recall": 0.0,
+    "deny_f1": 0.0,
+    "accuracy": 0.9,
     "accuracy_ci95": [
-      1.0,
+      0.7,
       1.0
     ],
-    "false_deny_rate": 0.0,
+    "false_deny_rate": 0.1,
     "false_deny_rate_ci95": [
       0.0,
-      0.0
+      0.3
     ],
     "confusion": {
-      "tp": 15,
-      "fp": 0,
-      "tn": 15,
+      "tp": 0,
+      "fp": 1,
+      "tn": 9,
       "fn": 0
     }
   }

@@ -15,6 +15,7 @@ from .backends.base import NLIBackend
 from .decompose import decompose_claims
 from .hashing import hash_obj
 from .policy import DEFAULT_POLICY, GatePolicy
+from .textutil import relevance
 from .types import Citation, Claim, ClaimVerdict, Decision, GateResult, PairEvidence, Verdict
 
 
@@ -77,15 +78,26 @@ def _classify_claim(
     max_c = -1.0
     best_e_cid: str | None = None
     best_c_cid: str | None = None
+    n_relevant = 0
     for cit, res in zip(citations, results, strict=True):
+        rel = relevance(claim.text, cit.text)
+        is_relevant = rel >= policy.min_relevance
         evidence.append(
             PairEvidence(
                 citation_id=cit.id,
                 entailment=res.entailment,
                 contradiction=res.contradiction,
                 neutral=res.neutral,
+                relevance=rel,
+                relevant=is_relevant,
             )
         )
+        # Only on-topic citations get to vote. An irrelevant passage cannot
+        # entail or contradict the claim, however confidently the NLI model
+        # scores it (distractor filtering).
+        if not is_relevant:
+            continue
+        n_relevant += 1
         if res.entailment > max_e:
             max_e = res.entailment
             best_e_cid = cit.id
@@ -93,10 +105,14 @@ def _classify_claim(
             max_c = res.contradiction
             best_c_cid = cit.id
 
-    # R-A (contradiction) is checked first: contradiction always wins over
-    # entailment, so a claim that some passage contradicts can never be allowed.
     verdict: Verdict
-    if max_c >= policy.tau_contra:
+    if n_relevant == 0:
+        # No cited passage is even on-topic -> unsupported -> deny (fail-closed).
+        verdict, rule, best = "baseless", "R-C:no-relevant-citation", None
+        max_e = max_c = 0.0
+    # R-A (contradiction) is checked first: contradiction always wins over
+    # entailment, so a claim that a relevant passage contradicts is never allowed.
+    elif max_c >= policy.tau_contra:
         verdict, rule, best = "contradicted", "R-A", best_c_cid
     elif max_e >= policy.tau_entail:
         verdict, rule, best = "entailed", "R-B", best_e_cid
@@ -224,12 +240,15 @@ def gate(
 
     n_c = sum(1 for v in verdicts if v.verdict == "contradicted")
     n_b = sum(1 for v in verdicts if v.verdict == "baseless")
+    n_err = sum(1 for v in verdicts if v.error is not None)
     all_entailed = n_c == 0 and n_b == 0
     decision: Decision = "allow" if all_entailed else "deny"
     if all_entailed:
         reason = f"allow: all {len(verdicts)} claim(s) entailed by the cited passages."
     else:
         reason = f"deny: {n_c} contradicted, {n_b} unsupported of {len(verdicts)} claim(s)."
+        if n_err:
+            reason += f" ({n_err} from backend errors, counted fail-closed.)"
 
     result = _result(
         decision=decision,

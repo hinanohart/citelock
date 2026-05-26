@@ -46,7 +46,9 @@ class IgnoresCitations(NLIBackend):
         return NLIResult(entailment=0.95, contradiction=0.02, neutral=0.03)
 
 
-CASES = [
+# For a citation-reading backend: one supporting + one off-topic citation, so
+# dropping the supporter leaves only an irrelevant passage -> verdict flips.
+GOOD_CASES = [
     SanityCase(
         answer="Photosynthesis occurs in plants.",
         citations=["Photosynthesis is a process in plants.", "Rocks are minerals."],
@@ -57,9 +59,29 @@ CASES = [
     ),
 ]
 
+# For the ignoring backend: TWO on-topic citations, so after dropping one a
+# relevant citation still remains. A backend that genuinely reads citations
+# could change its mind; one that ignores them will not -> sanity catches it.
+IGNORE_CASES = [
+    SanityCase(
+        answer="Photosynthesis occurs in plants.",
+        citations=[
+            "Photosynthesis is a process in plants.",
+            "Plants use photosynthesis, which occurs in their cells.",
+        ],
+    ),
+    SanityCase(
+        answer="Gravity attracts masses.",
+        citations=[
+            "Gravity is a force that attracts masses.",
+            "Masses attract one another through gravity.",
+        ],
+    ),
+]
+
 
 def test_good_backend_passes_sanity():
-    report = run_sanity(CASES, backend=ReadsCitations(), seed=1)
+    report = run_sanity(GOOD_CASES, backend=ReadsCitations(), seed=1)
     assert report.n_entailed_claims >= 2
     assert report.shuffle_invariance_rate == 1.0
     assert report.drop_flip_rate >= 0.5
@@ -67,14 +89,15 @@ def test_good_backend_passes_sanity():
 
 
 def test_ignoring_backend_fails_drop_sanity():
-    report = run_sanity(CASES, backend=IgnoresCitations(), seed=1)
-    # It always entails, so dropping a citation never flips -> sanity fails.
+    report = run_sanity(IGNORE_CASES, backend=IgnoresCitations(), seed=1)
+    # It always entails and a relevant citation always remains after the drop,
+    # so the verdict never flips -> sanity fails.
     assert report.drop_flip_rate == 0.0
     assert not report.passed
     assert any("not be reading" in n for n in report.notes)
 
 
 def test_bootstrap_ci_is_ordered():
-    report = run_sanity(CASES, backend=ReadsCitations(), seed=2)
+    report = run_sanity(GOOD_CASES, backend=ReadsCitations(), seed=2)
     lo, hi = report.drop_flip_ci
     assert 0.0 <= lo <= hi <= 1.0

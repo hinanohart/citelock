@@ -54,6 +54,10 @@ class PairEvidence(BaseModel):
     entailment: float
     contradiction: float
     neutral: float
+    # Lexical relevance of this citation to the claim, and whether it cleared
+    # the policy's min_relevance bar (only relevant citations vote).
+    relevance: float = 0.0
+    relevant: bool = True
 
 
 class ClaimVerdict(BaseModel):

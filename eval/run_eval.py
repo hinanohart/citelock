@@ -55,9 +55,9 @@ def _bootstrap_ci(values: list[int], rng: random.Random, n: int = 2000) -> list[
     return [round(samples[int(0.025 * n)], 4), round(samples[min(n - 1, int(0.975 * n))], 4)]
 
 
-def evaluate(cases: list[dict], backend: NLIBackend, seed: int) -> dict:
+def evaluate(cases: list[dict], backend: NLIBackend, seed: int, min_relevance: float) -> dict:
     rng = random.Random(seed)
-    policy = GatePolicy()
+    policy = GatePolicy(min_relevance=min_relevance)
     # Confusion matrix on the DENY class (deny is the "positive"/safety class).
     tp = fp = tn = fn = 0
     correct: list[int] = []
@@ -116,12 +116,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--model", default=None)
     p.add_argument("--cases", default=str(HERE / "labeled_cases.json"))
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--min-relevance", type=float, default=0.2)
     p.add_argument("--json", default=None, help="also write the report JSON here")
     args = p.parse_args(argv)
 
     cases = json.loads(Path(args.cases).read_text(encoding="utf-8"))
     backend = _make_backend(args.backend, args.model)
-    report = {"env": env_stamp(backend, args.seed), "metrics": evaluate(cases, backend, args.seed)}
+    stamp = env_stamp(backend, args.seed)
+    stamp["min_relevance"] = args.min_relevance
+    report = {"env": stamp, "metrics": evaluate(cases, backend, args.seed, args.min_relevance)}
 
     print(json.dumps(report, indent=2))
     if args.json:

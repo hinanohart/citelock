@@ -83,16 +83,21 @@ citelock backends                            # list backends + licenses
 
 1. **Decompose** the answer into claims (deterministic sentence split by
    default; LLM-assisted decomposition is opt-in and not deterministic).
-2. For each claim × each citation, the **NLI backend** returns
+2. **Relevance filter.** A citation may only vote on a claim if at least
+   `min_relevance` (default 0.2) of the claim's content words appear in it.
+   NLI models confidently mislabel unrelated passages, so without this a single
+   off-topic passage from the retriever would falsely contradict a correct
+   answer. (Set `min_relevance=0` to disable.)
+3. For each claim × each **relevant** citation, the **NLI backend** returns
    `(entailment, contradiction, neutral)`.
-3. **Fail-closed rules** (thresholds recorded in the policy id):
-   - **R-A** any citation contradicts ≥ `tau_contra` → **contradicted** (checked first)
-   - **R-B** else any citation entails ≥ `tau_entail` → **entailed**
-   - **R-C** else → **baseless** (unsupported)
-4. The answer is **allowed only if every claim is entailed.** Any contradicted
-   or unsupported claim, zero claims, too few citations, a backend error, or a
-   decomposition error → **deny**. There is no path that turns an error into an
-   allow.
+4. **Fail-closed rules** (thresholds recorded in the policy id):
+   - **R-A** any relevant citation contradicts ≥ `tau_contra` → **contradicted** (checked first)
+   - **R-B** else any relevant citation entails ≥ `tau_entail` → **entailed**
+   - **R-C** else → **baseless** (unsupported); a claim with no relevant citation is baseless
+5. The answer is **allowed only if every claim is entailed.** Any contradicted
+   or unsupported claim, a claim with no on-topic citation, zero claims, too few
+   citations, a backend error, or a decomposition error → **deny**. There is no
+   path that turns an error into an allow.
 
 ## NLI backends and licenses
 
@@ -148,27 +153,41 @@ accuracy, and **false-deny rate**, each with a bootstrap 95% CI and an
 environment stamp. Numbers below are **real, reproducible runs** — no
 placeholders.
 
-Measured on the shipped 30-case curated set (`eval/labeled_cases.json`),
-seed 0, Python 3.12.3, Linux x86_64 (`0.1.0a1`):
+Measured runs, seed 0, Python 3.12.3, Linux x86_64 (`0.1.0a1`), default
+`min_relevance=0.2`.
+
+**Clear-cut set** (`eval/labeled_cases.json`, 30 cases, one relevant citation each):
 
 | backend | model | accuracy | deny P / R / F1 | false-deny rate |
 |---|---|---|---|---|
 | `local` *(default)* | cross-encoder/nli-deberta-v3-base | **1.00** (30/30) | 1.00 / 1.00 / 1.00 | 0.00 |
 | `stub` | built-in lexical (demo only) | 0.70 | — / 0.67 / — | 0.27 `[0.07, 0.47]` |
 
-**Read this honestly.** These 30 cases are *clear-cut grounding decisions chosen
-by the author* — a smoke test of the gate plus the backend, **not a hard
-benchmark**. A perfect score here means the cases are unambiguous, not that the
-gate is a fact-checker. It also shows the contrast the gate is built to surface:
-swap in a weak backend (`stub`) and accuracy and the false-deny rate degrade
-immediately. Real-world RAG faithfulness is materially harder; treat external
-benchmarks as the real test.
+These 30 cases are *unambiguous grounding decisions chosen by the author* — a
+smoke test of the gate plus the backend, **not a hard benchmark**. A perfect
+score means the cases are clear-cut, not that the gate is a fact-checker.
+
+**Noisy-retrieval set** (`eval/distractor_cases.json`, 10 supported answers, each
+with 1 relevant + 2 off-topic citations — the realistic RAG case):
+
+| min_relevance | false-deny rate (local) |
+|---|---|
+| 0.0 (filter off) | **0.90** `[0.70, 1.00]` |
+| 0.2 (default) | **0.10** `[0.00, 0.30]` |
+
+This is the honest, important number. With the relevance filter **off**, the
+NLI model's confident false-contradictions on off-topic passages deny 9 of 10
+correct answers. The default filter cuts that to 1 of 10 — a real, measured ~9x
+reduction, but **not zero.** A residual false-deny rate remains and will be
+higher on harder data; measure it on yours before trusting the gate in
+production.
 
 Reproduce:
 
 ```bash
-python eval/run_eval.py --backend local    # downloads the Apache-2.0 model
-python eval/run_eval.py --backend stub      # offline
+python eval/run_eval.py --backend local                                  # clear-cut set
+python eval/run_eval.py --backend local --cases eval/distractor_cases.json
+python eval/run_eval.py --backend local --cases eval/distractor_cases.json --min-relevance 0
 ```
 
 **On public datasets:** RAGTruth (MIT) and ExpertQA (MIT) are appropriate
@@ -182,12 +201,20 @@ misleading ones.
 
 - Entailment ≠ truth. A claim entailed by a wrong passage is allowed; citelock
   gates *grounding in the cited text*, nothing more.
+- **Off-topic passages and false-deny.** NLI models score unrelated passages as
+  confident *contradictions*, not neutral (e.g. a passage about Saturn scored
+  0.97 "contradiction" against a claim about Paris). The relevance filter
+  mitigates this but does not eliminate it; the residual false-deny rate (~0.10
+  on the noisy-retrieval set above) is the gate's main usability cost. A
+  relevance-scoped contradiction model is planned. Measure your own false-deny
+  rate.
+- The relevance filter is lexical content-word overlap; a genuine contradiction
+  phrased with no shared vocabulary can be missed. It trades a little of that
+  recall for a large drop in distractor-driven false-denies.
 - Sentence-level decomposition: a sentence with two facts is one claim in the
   alpha. Finer decomposition is opt-in (LLM, non-deterministic).
 - NLI is applied per passage; multi-hop claims spanning several passages are not
   yet aggregated.
-- Accuracy is bounded by the NLI backend; a too-aggressive deny rate ("correct
-  but unused") is a real risk — measure the false-deny rate for your data.
 
 ## License
 
