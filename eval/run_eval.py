@@ -1,22 +1,22 @@
 """citelock evaluation harness.
 
-Reports REAL, reproducible numbers — never placeholders. Two sources:
+Reports REAL, reproducible numbers — never placeholders. It evaluates any
+labeled set passed via --cases (JSON list of {answer, citations, gold}); the
+shipped sets are eval/labeled_cases.json (clear-cut) and eval/distractor_cases.json
+(noisy retrieval). This is what the README table reports.
 
-  1. A small curated labeled set shipped in eval/labeled_cases.json, with gold
-     allow/deny per (answer, citations). Runs offline (with the stub) or against
-     the local NLI model. This is what the README table reports.
-
-  2. RAGTruth (MIT) and ExpertQA (MIT) loaders for users who want to run on the
-     public datasets. The datasets are NOT redistributed; these download them at
-     run time. We do not publish numbers we have not run and stamped.
+Public benchmarks (RAGTruth, ExpertQA; both MIT) are NOT redistributed here and
+there is no built-in loader for them yet: convert them to the --cases JSON format
+yourself to evaluate on them. We do not publish numbers we have not run and
+stamped.
 
 Every run prints an environment stamp (hardware/OS/Python/date/seed/backend) and
 bootstrap confidence intervals on the headline rates.
 
 Usage:
     python eval/run_eval.py --backend stub
-    python eval/run_eval.py --backend local            # real NLI model
-    python eval/run_eval.py --backend local --json out.json
+    python eval/run_eval.py --backend local                              # real NLI model
+    python eval/run_eval.py --backend local --cases eval/distractor_cases.json
 """
 
 from __future__ import annotations
