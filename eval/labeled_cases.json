@@ -1,0 +1,37 @@
+[
+  {"answer": "Paris is the capital of France.", "citations": ["Paris is the capital city of France."], "gold": "allow"},
+  {"answer": "The Eiffel Tower is in Paris.", "citations": ["The Eiffel Tower is a landmark located in Paris, France."], "gold": "allow"},
+  {"answer": "Water boils at 100 degrees Celsius at sea level.", "citations": ["At sea level, water boils at 100 degrees Celsius."], "gold": "allow"},
+  {"answer": "Mount Everest is the tallest mountain on Earth.", "citations": ["Mount Everest is Earth's highest mountain above sea level."], "gold": "allow"},
+  {"answer": "The human heart has four chambers.", "citations": ["The heart is composed of four chambers: two atria and two ventricles."], "gold": "allow"},
+  {"answer": "Photosynthesis produces oxygen.", "citations": ["During photosynthesis, plants release oxygen as a byproduct."], "gold": "allow"},
+  {"answer": "Shakespeare wrote Hamlet.", "citations": ["Hamlet is a tragedy written by William Shakespeare."], "gold": "allow"},
+  {"answer": "Insulin helps regulate blood sugar levels.", "citations": ["Insulin is a hormone that lowers blood glucose by promoting its uptake into cells."], "gold": "allow"},
+  {"answer": "Sound cannot travel through a vacuum.", "citations": ["Because it needs a medium, sound does not propagate through a vacuum."], "gold": "allow"},
+
+  {"answer": "The treaty was never signed.", "citations": ["The treaty was signed by all parties in 1990."], "gold": "deny"},
+  {"answer": "Mount Everest is the shortest mountain on Earth.", "citations": ["Mount Everest is Earth's highest mountain above sea level."], "gold": "deny"},
+  {"answer": "Water freezes at 100 degrees Celsius.", "citations": ["Water freezes at 0 degrees Celsius at sea level."], "gold": "deny"},
+  {"answer": "The Great Wall of China is located in Egypt.", "citations": ["The Great Wall of China is a series of fortifications in northern China."], "gold": "deny"},
+  {"answer": "Light travels slower than sound.", "citations": ["Light travels far faster than sound."], "gold": "deny"},
+  {"answer": "Penicillin was discovered by Marie Curie.", "citations": ["Penicillin was discovered by Alexander Fleming in 1928."], "gold": "deny"},
+  {"answer": "The patient was prescribed antibiotics for a viral infection.", "citations": ["Antibiotics are effective against bacterial infections, not viral ones."], "gold": "deny"},
+
+  {"answer": "The capital of Australia is Sydney.", "citations": ["Australia is a country in the Southern Hemisphere known for its wildlife."], "gold": "deny"},
+  {"answer": "The company reported a profit of 5 million dollars.", "citations": ["The company released its quarterly report on Tuesday."], "gold": "deny"},
+  {"answer": "Jupiter has exactly 79 moons.", "citations": ["Jupiter is the largest planet in the Solar System."], "gold": "deny"},
+
+  {"answer": "Paris is the capital of France. It has a population of fifty million people.", "citations": ["Paris is the capital city of France.", "Paris had about 2.1 million residents in 2020."], "gold": "deny"},
+  {"answer": "The Amazon is a large river. It flows through Brazil.", "citations": ["The Amazon is one of the world's largest rivers by discharge.", "The Amazon River flows through Brazil before reaching the Atlantic."], "gold": "allow"},
+  {"answer": "The vaccine is safe. It cures cancer.", "citations": ["Clinical trials found the vaccine to have a strong safety profile.", "The vaccine is designed to prevent a specific infectious disease."], "gold": "deny"},
+
+  {"answer": "The building is 300 meters tall.", "citations": ["The building stands 324 meters tall."], "gold": "deny"},
+  {"answer": "The study enrolled fewer than 100 participants.", "citations": ["The study enrolled 2,300 participants across five hospitals."], "gold": "deny"},
+
+  {"answer": "The company was established over a century ago.", "citations": ["The company was founded in 1905."], "gold": "allow"},
+  {"answer": "Dogs are warm-blooded animals.", "citations": ["All dogs are mammals, and mammals are warm-blooded."], "gold": "allow"},
+  {"answer": "The author won a major literary award.", "citations": ["In 1998 the author received the National Book Award for fiction."], "gold": "allow"},
+  {"answer": "The drug should not be taken with alcohol.", "citations": ["Combining this medication with alcohol can cause dangerous side effects and is contraindicated."], "gold": "allow"},
+  {"answer": "Helium is lighter than air.", "citations": ["Helium has a lower density than air, which is why helium balloons rise."], "gold": "allow"},
+  {"answer": "The election was held in November.", "citations": ["Voters went to the polls in the autumn, with results announced shortly after."], "gold": "deny"}
+]

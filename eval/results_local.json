@@ -1,0 +1,34 @@
+{
+  "env": {
+    "date": "2026-05-27",
+    "python": "3.12.3",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "seed": 0,
+    "backend_id": "local:cross-encoder/nli-deberta-v3-base",
+    "backend_deterministic": true,
+    "citelock_version": "0.1.0a1"
+  },
+  "metrics": {
+    "n_cases": 30,
+    "deny_precision": 1.0,
+    "deny_recall": 1.0,
+    "deny_f1": 1.0,
+    "accuracy": 1.0,
+    "accuracy_ci95": [
+      1.0,
+      1.0
+    ],
+    "false_deny_rate": 0.0,
+    "false_deny_rate_ci95": [
+      0.0,
+      0.0
+    ],
+    "confusion": {
+      "tp": 15,
+      "fp": 0,
+      "tn": 15,
+      "fn": 0
+    }
+  }
+}

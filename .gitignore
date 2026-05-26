@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# Secrets / local
+.env
+*.env
+.citelock-progress.json
+
+# Work-in-progress quarantine (R8)
+experiments/
+
+# Model / data caches (never redistribute datasets)
+.cache/
+eval/_data/
+*.ckpt
+*.safetensors
+
+# OS
+.DS_Store

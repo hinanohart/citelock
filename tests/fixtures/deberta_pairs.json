@@ -1,0 +1,54 @@
+{
+  "backend_id": "local:cross-encoder/nli-deberta-v3-base",
+  "records": [
+    {
+      "premise": "Paris is the capital of France.",
+      "hypothesis": "Paris is the capital of France.",
+      "entailment": 0.9965079426765442,
+      "contradiction": 0.00014780054334551096,
+      "neutral": 0.003344255965203047
+    },
+    {
+      "premise": "The Eiffel Tower is located in Paris, France.",
+      "hypothesis": "The Eiffel Tower is in Paris.",
+      "entailment": 0.9975046515464783,
+      "contradiction": 7.379763701464981e-05,
+      "neutral": 0.0024215446319431067
+    },
+    {
+      "premise": "Construction of the Eiffel Tower finished in 1889.",
+      "hypothesis": "The Eiffel Tower was completed in 1889.",
+      "entailment": 0.9979153275489807,
+      "contradiction": 5.588430576608516e-05,
+      "neutral": 0.002028765855357051
+    },
+    {
+      "premise": "The treaty was signed in 1990.",
+      "hypothesis": "The treaty was never signed.",
+      "entailment": 1.0229750841972418e-05,
+      "contradiction": 0.9999706745147705,
+      "neutral": 1.901682117022574e-05
+    },
+    {
+      "premise": "Mount Everest is the tallest mountain on Earth.",
+      "hypothesis": "Mount Everest is the shortest mountain.",
+      "entailment": 0.0002771735598798841,
+      "contradiction": 0.9991627931594849,
+      "neutral": 0.0005600228905677795
+    },
+    {
+      "premise": "Bananas are a yellow fruit grown in tropical regions.",
+      "hypothesis": "The stock market rose sharply today.",
+      "entailment": 0.00013611774193122983,
+      "contradiction": 0.9502931237220764,
+      "neutral": 0.04957074671983719
+    },
+    {
+      "premise": "Water boils at 100 degrees Celsius at sea level.",
+      "hypothesis": "Water boils at 100 degrees Celsius at sea level.",
+      "entailment": 0.9863030314445496,
+      "contradiction": 0.0010857721790671349,
+      "neutral": 0.012611127458512783
+    }
+  ]
+}
