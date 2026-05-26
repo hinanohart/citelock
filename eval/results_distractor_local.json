@@ -7,11 +7,13 @@
     "seed": 0,
     "backend_id": "local:cross-encoder/nli-deberta-v3-base",
     "backend_deterministic": true,
-    "citelock_version": "0.1.0a1",
+    "citelock_version": "0.1.0a2",
     "min_relevance": 0.2
   },
   "metrics": {
     "n_cases": 10,
+    "n_gold_allow": 10,
+    "n_gold_deny": 0,
     "deny_precision": 0.0,
     "deny_recall": 0.0,
     "deny_f1": 0.0,
@@ -24,6 +26,11 @@
     "false_deny_rate_ci95": [
       0.0,
       0.3
+    ],
+    "false_allow_rate": 0.0,
+    "false_allow_rate_ci95": [
+      0.0,
+      0.0
     ],
     "confusion": {
       "tp": 0,

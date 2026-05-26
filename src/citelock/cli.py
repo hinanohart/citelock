@@ -216,7 +216,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     except FileNotFoundError as e:
         print(f"error: file not found: {e}", file=sys.stderr)
         return EXIT_ERROR
-    except (ValueError, KeyError, json.JSONDecodeError) as e:
+    except (ValueError, KeyError, TypeError, json.JSONDecodeError) as e:
         print(f"error: {e}", file=sys.stderr)
         return EXIT_ERROR
 

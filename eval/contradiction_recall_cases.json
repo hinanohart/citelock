@@ -1,0 +1,14 @@
+[
+  {"answer": "Sharks are mammals.", "citations": ["Sharks are fish; they are not mammals.", "The aquarium opens at nine in the morning."], "gold": "deny"},
+  {"answer": "The capital of Australia is Sydney.", "citations": ["Canberra, not Sydney, is the capital of Australia.", "Kangaroos are marsupials native to the continent."], "gold": "deny"},
+  {"answer": "Mount Everest is the shortest mountain on Earth.", "citations": ["Mount Everest is the highest mountain on Earth above sea level.", "The cafe down the street serves espresso."], "gold": "deny"},
+  {"answer": "Diamonds are made of compressed coal.", "citations": ["Diamonds form from carbon under extreme pressure in the mantle, not from coal.", "The orchestra rehearsed late into the evening."], "gold": "deny"},
+  {"answer": "Sound travels faster in air than in water.", "citations": ["Sound travels faster in water than in air.", "The library extended its weekend hours."], "gold": "deny"},
+  {"answer": "Albert Einstein failed mathematics as a student.", "citations": ["Einstein excelled in mathematics from an early age and never failed it.", "Granite is a common igneous rock."], "gold": "deny"},
+  {"answer": "The Great Wall of China is visible from the Moon with the naked eye.", "citations": ["Astronauts have confirmed the Great Wall of China is not visible from the Moon with the naked eye.", "Honey can keep for years if sealed."], "gold": "deny"},
+  {"answer": "Bats are blind.", "citations": ["Bats have functional eyes and can see, contrary to the common myth.", "Tungsten has a very high melting point."], "gold": "deny"},
+  {"answer": "Pluto is a planet.", "citations": ["Pluto is commonly listed as a planet in older textbooks.", "In 2006 the international astronomical union downgraded the ninth body to dwarf status."], "gold": "deny"},
+  {"answer": "Humans use only ten percent of their brains.", "citations": ["It is widely repeated that humans use ten percent of their brains.", "Imaging studies show that nearly every region is active over the course of a day."], "gold": "deny"},
+  {"answer": "Goldfish have a three-second memory.", "citations": ["A popular belief holds that goldfish have only a three-second memory.", "Behavioral experiments demonstrate these animals retain learned tasks for months."], "gold": "deny"},
+  {"answer": "Lightning never strikes the same place twice.", "citations": ["Tall towers are hit by electrical discharges repeatedly every single year.", "The neighborhood bakery is closed on Mondays."], "gold": "deny"}
+]

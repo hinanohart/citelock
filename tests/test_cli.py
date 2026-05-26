@@ -118,3 +118,13 @@ def test_missing_citations_file_is_error():
         ["gate", "--answer", "A.", "--citations-file", "/nonexistent/x.json", "--backend", "stub"]
     )
     assert code == EXIT_ERROR
+
+
+def test_bad_citation_type_is_error_not_crash(tmp_path):
+    # A citations file whose elements are not Citation|dict|str makes
+    # _coerce_citations raise TypeError; the CLI must catch it and exit 3, not
+    # crash with an uncaught traceback (exit-code contract).
+    cf = tmp_path / "bad.json"
+    cf.write_text(json.dumps([123]), encoding="utf-8")
+    code = main(["gate", "--answer", "A claim.", "--citations-file", str(cf), "--backend", "stub"])
+    assert code == EXIT_ERROR

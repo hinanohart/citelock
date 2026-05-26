@@ -5,38 +5,38 @@
     "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
     "machine": "x86_64",
     "seed": 0,
-    "backend_id": "stub-lexical-v1",
+    "backend_id": "local:cross-encoder/nli-deberta-v3-base",
     "backend_deterministic": true,
     "citelock_version": "0.1.0a2",
     "min_relevance": 0.2
   },
   "metrics": {
-    "n_cases": 30,
-    "n_gold_allow": 15,
-    "n_gold_deny": 15,
-    "deny_precision": 0.7143,
-    "deny_recall": 0.6667,
-    "deny_f1": 0.6897,
-    "accuracy": 0.7,
+    "n_cases": 12,
+    "n_gold_allow": 0,
+    "n_gold_deny": 12,
+    "deny_precision": 1.0,
+    "deny_recall": 0.8333,
+    "deny_f1": 0.9091,
+    "accuracy": 0.8333,
     "accuracy_ci95": [
-      0.5333,
-      0.8667
+      0.5833,
+      1.0
     ],
-    "false_deny_rate": 0.2667,
+    "false_deny_rate": 0.0,
     "false_deny_rate_ci95": [
-      0.0667,
-      0.4667
+      0.0,
+      0.0
     ],
-    "false_allow_rate": 0.3333,
+    "false_allow_rate": 0.1667,
     "false_allow_rate_ci95": [
-      0.1333,
-      0.6
+      0.0,
+      0.4167
     ],
     "confusion": {
       "tp": 10,
-      "fp": 4,
-      "tn": 11,
-      "fn": 5
+      "fp": 0,
+      "tn": 0,
+      "fn": 2
     }
   }
 }

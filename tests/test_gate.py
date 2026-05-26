@@ -99,6 +99,25 @@ def test_input_digest_stable_and_sensitive(entail_backend):
     assert r1.input_digest != r3.input_digest
 
 
+def test_decompose_error_fails_closed(entail_backend):
+    # An unknown decomposition method makes decompose_claims raise; the gate must
+    # turn that into a DENY (fail-closed), never an allow. README promises this.
+    r = gate("The sky is blue.", CITS, backend=entail_backend, decompose="bogus")  # type: ignore[arg-type]
+    assert r.decision == "deny"
+    assert r.n_claims == 0
+    assert "decomposition failed" in r.reason
+
+
+def test_non_latin_answer_can_allow(entail_backend):
+    # Regression for the ASCII-only tokenizer that silently denied every
+    # non-Latin answer: a Cyrillic answer with an on-topic Cyrillic citation
+    # must be able to clear the relevance filter and be allowed.
+    r = gate("Небо синее.", ["Небо синее сегодня."], backend=entail_backend)
+    assert r.decision == "allow"
+    assert r.claim_verdicts[0].verdict == "entailed"
+    assert r.claim_verdicts[0].evidence[0].relevant is True
+
+
 def test_threshold_boundary():
     from citelock.backends.base import NLIBackend, NLIResult
 

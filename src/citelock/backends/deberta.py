@@ -88,7 +88,19 @@ class LocalCrossEncoderBackend(NLIBackend):
         self._model = model
         # Map label name -> logit index from the model config (do not hardcode).
         id2label = {int(k): v for k, v in model.config.id2label.items()}
-        self._label_index = {v.lower(): k for k, v in id2label.items()}
+        label_index = {v.lower(): k for k, v in id2label.items()}
+        # Fail-closed at load time: a model that does not expose all three NLI
+        # classes would otherwise read a missing class as probability 0.0 — and a
+        # missing *contradiction* class would silently let real contradictions
+        # score 0 and pass the gate. Refuse such a model loudly instead.
+        missing = {"entailment", "contradiction", "neutral"} - set(label_index)
+        if missing:
+            raise ValueError(
+                f"model {self.model_name!r} is not a 3-class NLI model: its config "
+                f"labels are {sorted(label_index)}, missing {sorted(missing)}. "
+                "citelock needs entailment/contradiction/neutral to gate fail-closed."
+            )
+        self._label_index = label_index
 
     def classify_batch(self, pairs: list[tuple[str, str]]) -> list[NLIResult]:
         if not pairs:

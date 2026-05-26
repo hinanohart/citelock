@@ -7,16 +7,36 @@ several noisy passages a RAG retriever returns produces large false-deny rates.
 Requiring a minimum content-word overlap before a citation may entail or
 contradict a claim filters out those distractors deterministically.
 
-This is intentionally simple and language-agnostic-ish (whitespace + alnum
-tokens, English stopwords). It is a *gate on participation*, not a semantic
-similarity score.
+It is a *gate on participation*, not a semantic similarity score, and it has two
+honest limitations callers must know about:
+
+1. The filter suppresses a citation's *contradiction* vote as well as its
+   entailment vote. A genuine contradiction phrased with little shared
+   vocabulary is therefore dropped too, which can let a wrong answer through
+   (see README "Limitations" / the contradiction-recall eval). The filter trades
+   contradiction recall for a large drop in distractor-driven false-denies.
+2. Tokenization is Unicode word characters split on non-word boundaries. This
+   works for whitespace-delimited scripts (Latin incl. accents, Cyrillic, Greek,
+   …). Scripts written without spaces between words (CJK, Thai, …) are *not*
+   segmented — a run of such characters becomes one token — so lexical overlap
+   is unreliable there and you likely need ``min_relevance=0`` plus a backend
+   you trust, or a custom tokenizer. Stopwords are English-only.
 """
 
 from __future__ import annotations
 
 import re
 
-_WORD = re.compile(r"[a-z0-9]+")
+# Unicode word characters (so non-ASCII, whitespace-delimited scripts are not
+# silently reduced to the empty set, which would deny every answer). NOTE: this
+# does not segment scripts without word spacing (CJK/Thai); see module docstring.
+_WORD = re.compile(r"\w+", re.UNICODE)
+# English stopwords, including negations. Negations are dropped here on purpose:
+# relevance is about *topic* overlap, and "X happened" vs "X did not happen"
+# share a topic and should both be allowed to vote (the NLI backend, not this
+# filter, decides entail vs contradict). backends/stub.py keeps its OWN, smaller
+# stopword set that deliberately *excludes* negations because it does cheap
+# negation detection; the two sets are intentionally not shared.
 _STOP = frozenset(
     {
         "the",
