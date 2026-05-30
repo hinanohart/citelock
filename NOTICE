@@ -1,0 +1,58 @@
+citelock
+Copyright 2026 Hinano Hart
+
+This product includes software developed by Hinano Hart, licensed under the
+MIT License (see LICENSE).
+
+================================================================================
+Third-party components
+================================================================================
+
+citelock's core (the `citelock` package excluding the optional `[nli]` and
+`[llm]` extras) depends only on the following, installed from PyPI and NOT
+redistributed in this repository:
+
+  - pydantic            MIT License
+  - syntok              MIT License
+  - python-ulid         MIT License
+  - blake3              CC0-1.0 / Apache-2.0 (dual)   [hash-chain; see ledger.py]
+
+Optional extras (installed only when requested, NOT part of the core install):
+
+  [nli]
+  - torch               BSD-3-Clause
+  - transformers        Apache-2.0
+  - sentencepiece       Apache-2.0
+
+Default NLI model (downloaded at runtime from the Hugging Face Hub, NOT
+redistributed here):
+
+  - cross-encoder/nli-deberta-v3-base     Apache-2.0
+        Trained on SNLI + MultiNLI (both research/commercial-permissive).
+
+Opt-in NLI models (the user must select these explicitly; citelock prints a
+license warning before use and never selects them by default):
+
+  - MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli   MIT (model weights)
+        NOTE: its training data includes ANLI (CC-BY-NC-4.0). Use under the
+        terms applicable to your deployment.
+  - lytang/MiniCheck-DeBERTa-v3-Large              CC-BY-NC-4.0 (NON-commercial)
+
+================================================================================
+Design lineage
+================================================================================
+
+citelock reuses the *design ideas* (fail-closed gating, append-only per-item
+ledger) of the author's earlier project `subjunctor`. subjunctor is MIT-licensed
+TypeScript; NO subjunctor source code is copied into citelock.
+
+================================================================================
+Evaluation datasets (NOT redistributed; downloaded by eval scripts at run time)
+================================================================================
+
+  - RAGTruth   MIT License   (ParticleMedia/RAGTruth)
+  - ExpertQA   MIT License   (chaitanyamalaviya/ExpertQA)
+
+These datasets are used only to compute the evaluation numbers reported in the
+documentation. They are not included in this distribution. Each remains under
+its own license held by its respective authors.
