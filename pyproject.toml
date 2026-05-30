@@ -8,13 +8,13 @@ version = "0.1.0a2"
 description = "A deterministic, fail-closed citation gate for RAG answers — not a fact-checker."
 readme = "README.md"
 requires-python = ">=3.10,<3.13"
-license = { text = "Apache-2.0" }
+license = { text = "MIT" }
 authors = [{ name = "Hinano Hart" }]
 keywords = ["rag", "citation", "faithfulness", "nli", "fail-closed", "guardrail", "hallucination"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
+    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -29,7 +29,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Local NLI backend (default model: cross-encoder/nli-deberta-v3-base, Apache-2.0).
+# Local NLI backend (default model: cross-encoder/nli-deberta-v3-base, MIT).
 # CPU-only is fully supported; no GPU required.
 nli = [
     "torch>=2.0",

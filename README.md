@@ -52,7 +52,7 @@ for v in result.claim_verdicts:
     print(v.verdict, "::", v.claim_text)
 ```
 
-Real entailment with the default Apache-2.0 model:
+Real entailment with the default MIT model:
 
 ```python
 from citelock import gate
@@ -104,12 +104,12 @@ citelock backends                            # list backends + licenses
 | selector | model | license |
 |---|---|---|
 | `stub` | built-in lexical | test/demo only — **do not gate with it** |
-| `local` *(default)* | `cross-encoder/nli-deberta-v3-base` | **Apache-2.0** |
+| `local` *(default)* | `cross-encoder/nli-deberta-v3-base` | **MIT** |
 | `local --model MoritzLaurer/…mnli-fever-anli` | DeBERTa MNLI-FEVER-ANLI | MIT weights; training data includes **ANLI (CC-BY-NC-4.0)** |
 | `local --model lytang/MiniCheck-DeBERTa-v3-Large` | MiniCheck | **CC-BY-NC-4.0 (non-commercial)** |
 | `llm` (injected) | your provider | provider terms; **non-deterministic, not for gating** |
 
-Only the Apache-2.0 model is a default. Opt-in models with restrictive training
+Only the MIT model is a default. Opt-in models with restrictive training
 data print a warning before loading. citelock bundles no LLM SDK; the LLM-judge
 backend takes a `completion_fn` you supply, and exists for comparison only.
 
@@ -246,6 +246,6 @@ misleading ones.
 
 ## License
 
-Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE). citelock reuses the
+MIT. See [LICENSE](LICENSE). citelock reuses the
 *design ideas* of the author's MIT-licensed project `subjunctor`; no subjunctor
 source code is included.
