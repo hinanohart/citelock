@@ -21,15 +21,15 @@ network at inference time**, and its deterministic path is reproducible.
 
 ```mermaid
 flowchart TD
-    Input["answer + citations"] --> Decompose["Decompose into claims\ndeterministic sentence split\nor LLM opt-in"]
+    Input["answer + citations"] --> Decompose["Decompose into claims<br>deterministic sentence split<br>or LLM opt-in"]
     Decompose --> Claims["Claim list"]
-    Claims --> Relevance["Relevance filter\nmin_relevance=0.2 default\ncontent-word overlap"]
-    Relevance --> NLI["NLI backend\nentailment contradiction neutral\nper claim x citation pair"]
-    NLI --> Rules["Fail-closed rules\nR-A contradicted tau_contra\nR-B entailed tau_entail\nR-C baseless no support"]
-    Rules --> Verdict["Per-claim verdict\nentailed contradicted baseless"]
-    Verdict --> Gate["Gate decision\nall entailed -> allow\nany other -> deny"]
-    Gate --> Ledger["BLAKE3 chained ledger\nper-claim JSONL\ntamper-evident"]
-    Gate --> Result["GateResult\ndecision reason claim_verdicts\nis_fully_deterministic"]
+    Claims --> Relevance["Relevance filter<br>min_relevance=0.2 default<br>content-word overlap"]
+    Relevance --> NLI["NLI backend<br>entailment contradiction neutral<br>per claim x citation pair"]
+    NLI --> Rules["Fail-closed rules<br>R-A contradicted tau_contra<br>R-B entailed tau_entail<br>R-C baseless no support"]
+    Rules --> Verdict["Per-claim verdict<br>entailed contradicted baseless"]
+    Verdict --> Gate["Gate decision<br>all entailed -> allow<br>any other -> deny"]
+    Gate --> Ledger["BLAKE3 chained ledger<br>per-claim JSONL<br>tamper-evident"]
+    Gate --> Result["GateResult<br>decision reason claim_verdicts<br>is_fully_deterministic"]
 ```
 
 ## Install
