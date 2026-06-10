@@ -67,7 +67,7 @@ for v in result.claim_verdicts:
     print(v.verdict, "::", v.claim_text)
 ```
 
-Real entailment with the default MIT model:
+Real entailment with the default Apache-2.0 model:
 
 ```python
 from citelock import gate
