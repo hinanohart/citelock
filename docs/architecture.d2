@@ -1,0 +1,44 @@
+direction: down
+explanation: |md
+  ### citelock
+  **A deterministic, fail-closed citation gate for RAG answers — not a fact-checker.**
+| {near: top-center}
+
+input: "① answer + citations" {shape: oval; style: {fill: "#6366f1"; font-color: "#ffffff"; stroke: "#4338ca"; bold: true; font-size: 18}}
+decompose: "② Decompose into claims\ndeterministic split\nor LLM opt-in" {style: {fill: "#0ea5e9"; font-color: "#ffffff"; stroke: "#0369a1"; bold: true; font-size: 16}}
+input -> decompose: "② split"
+
+verification: "Verification Pipeline" {
+  style: {fill: "#f0fdf4"; stroke: "#10b981"; font-color: "#065f46"; bold: true; font-size: 16}
+  relevance: "Relevance filter\nmin_relevance=0.2\ncontent-word overlap"
+  nli: "③ NLI backend\nentailment / contradiction\nneutral per claim × citation"
+  rules: "Fail-closed rules\nR-A contradicted\nR-B entailed  R-C baseless"
+  *.style.fill: "#dcfce7"; *.style.font-color: "#065f46"
+}
+
+decompose -> verification.relevance: "③ filter"
+verification.relevance -> verification.nli
+verification.nli -> verification.rules
+
+decision: "Gate & Ledger" {
+  style: {fill: "#fffbeb"; stroke: "#f59e0b"; font-color: "#92400e"; bold: true; font-size: 16}
+  verdict: "④ Per-claim verdict\nentailed / contradicted\nbaseless"
+  gate: "④ Gate decision\nall entailed → allow\nany other → deny"
+  *.style.fill: "#fef3c7"; *.style.font-color: "#92400e"
+}
+
+verification.rules -> decision.verdict: "④ verdict"
+decision.verdict -> decision.gate
+
+ledger: "⑤ BLAKE3 chained ledger\nper-claim JSONL\ntamper-evident" {shape: cylinder; style: {fill: "#fdf2f8"; stroke: "#ec4899"; font-color: "#9d174e"; bold: true}}
+result: "⑤ GateResult\ndecision / reason\nclaim_verdicts" {shape: cylinder; style: {fill: "#fdf2f8"; stroke: "#ec4899"; font-color: "#9d174e"; bold: true}}
+
+decision.gate -> ledger: "⑤ write"
+decision.gate -> result: "⑤ emit"
+
+legend: "Legend" {
+  near: bottom-center
+  style: {fill: "#f8fafc"; stroke: "#cbd5e1"; font-size: 13}
+  e: "● entry"; c: "● core"; p: "● processing"; b: "● gate/rule"; d: "● output"
+  e.style.font-color: "#4338ca"; c.style.font-color: "#0369a1"; p.style.font-color: "#10b981"; b.style.font-color: "#f59e0b"; d.style.font-color: "#ec4899"
+}
